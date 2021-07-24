@@ -1,11 +1,14 @@
 import json
 
+from torch.cuda import is_available
+from model import NeuralNet
+
 from nltk import tag
 import numpy as np
 
 import torch
 import torch.nn as nn
-from torch.utils.data import DataLoader,Dataset, dataset
+from torch.utils.data import DataLoader,Dataset
 
 from preprocess import stem,tokenize, bag_of_words
 
@@ -61,6 +64,12 @@ class ChatDataset(Dataset):
 
 #Hyperparameters
 batch_size = 8
+input_size = len(X_train[0])
+hidden_size = 8
+output_size = len(tags)
 
 dataset = ChatDataset()
 train_loader = DataLoader(dataset=dataset,batch_size=batch_size,shuffle=True,num_workers=2)
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+model = NeuralNet(input_size,hidden_size,output_size).to(device)
